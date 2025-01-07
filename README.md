@@ -37,6 +37,7 @@ kubectl port-forward deployment/{microservice_name} 8000:{your_port}
 Пример:
 ```cmd
 kubectl port-forward deployment/frontend 8000:8000
+```
 
 Далее можно перейти на localhost:{your_port} в браузере
 Как выглядит:
