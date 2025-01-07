@@ -1,0 +1,156 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: f0mbus/frontend:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: ROTATE-SERVER
+              value: "http://rotate:3000"
+            - name: MIRROR-SERVER
+              value: "http://mirror:8001"
+            - name: INVERT-SERVER
+              value: "http://negative:5000"
+            - name: RESIZE-SERVER
+              value: "http://resize:8002"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rotate
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rotate
+  template:
+    metadata:
+      labels:
+        app: rotate
+    spec:
+      containers:
+        - name: rotate
+          image: f0mbus/rotate:latest
+          ports:
+            - containerPort: 3000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mirror
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mirror
+  template:
+    metadata:
+      labels:
+        app: mirror
+    spec:
+      containers:
+        - name: mirror
+          image: f0mbus/mirror:latest
+          ports:
+            - containerPort: 8001
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: negative
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: negative
+  template:
+    metadata:
+      labels:
+        app: negative
+    spec:
+      containers:
+        - name: negative
+          image: f0mbus/negative:latest
+          ports:
+            - containerPort: 5000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: resize
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: resize
+  template:
+    metadata:
+      labels:
+        app: resize
+    spec:
+      containers:
+        - name: resize
+          image: f0mbus/resize:latest
+          ports:
+            - containerPort: 8002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rotate
+spec:
+  selector:
+    app: rotate
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mirror
+spec:
+  selector:
+    app: mirror
+  ports:
+    - protocol: TCP
+      port: 8001
+      targetPort: 8001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: negative
+spec:
+  selector:
+    app: negative
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: resize
+spec:
+  selector:
+    app: resize
+  ports:
+    - protocol: TCP
+      port: 8002
+      targetPort: 8002
